@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Analytics Command Center</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #131823;
+            --bg-card: #1a1f2e;
+            --accent-cyan: #00f5ff;
+            --accent-orange: #ff6b35;
+            --accent-green: #00ff9f;
+            --accent-purple: #a855f7;
+            --text-primary: #e8edf4;
+            --text-secondary: #8b92a8;
+            --border: rgba(255, 255, 255, 0.08);
+            --glow-cyan: 0 0 20px rgba(0, 245, 255, 0.3);
+            --glow-orange: 0 0 20px rgba(255, 107, 53, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 245, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 107, 53, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-family: 'IBM Plex Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+
+        .kpi-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .chart-card:hover {
+            border-color: rgba(0, 245, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .toggle-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'IBM Plex Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .toggle-btn:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            border-color: var(--accent-cyan);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .toggle-btn.active {
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            border-color: var(--accent-cyan);
+        }
+
+        .simulator-container {
+            background: var(--bg-card);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--glow-cyan);
+        }
+
+        .simulator-controls {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        select, input[type="range"] {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        select:focus, input[type="range"]:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.1);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--glow-cyan);
+        }
+
+        .simulator-results {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .result-change {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .result-change.positive {
+            color: var(--accent-green);
+        }
+
+        .result-change.negative {
+            color: var(--accent-orange);
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-side {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .comparison-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hour-selector {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .hour-selector select {
+            width: 120px;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .comparison-metrics {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .insights-panel {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid var(--accent-cyan);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .insights-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--accent-cyan);
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .insight-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .insight-text {
+            flex: 1;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--bg-secondary);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.8rem;
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            color: var(--accent-cyan);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(0, 245, 255, 0.05);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-green {
+            background: rgba(0, 255, 159, 0.2);
+            color: var(--accent-green);
+        }
+
+        .status-yellow {
+            background: rgba(255, 217, 61, 0.2);
+            color: #ffd93d;
+        }
+
+        .status-red {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent-orange);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+        .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+        .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+        .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+        .kpi-card:nth-child(5) { animation-delay: 0.5s; }
+        .kpi-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @media (max-width: 1200px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .simulator-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>BUS ANALYTICS</h1>
+        </div>
+
+        <div id="fileUpload" class="loading" style="display: flex; flex-direction: column; align-items: center; gap: 2rem;">
+            <h2 style="color: var(--accent-cyan);">📁 Upload CSV Data</h2>
+            <p style="color: var(--text-secondary); max-width: 600px; text-align: center;">
+                Please select your <strong>ceck_in_buss.csv</strong> file to begin analysis
+            </p>
+            <input type="file" id="csvFileInput" accept=".csv" style="
+                padding: 1rem 2rem;
+                background: var(--bg-card);
+                border: 2px dashed var(--accent-cyan);
+                border-radius: 12px;
+                color: var(--text-primary);
+                cursor: pointer;
+                font-size: 1rem;
+                font-family: 'Outfit', sans-serif;
+            ">
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            Processing data and generating insights...
+        </div>
+
+        <div id="dashboard" style="display: none;">
+            <!-- KPI Cards -->
+            <div class="kpi-grid" id="kpiGrid"></div>
+
+            <!-- Data Table Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">📊 Complete Data View</h2>
+                </div>
+                <div class="table-container" style="max-height: 500px; overflow-y: auto;">
+                    <div style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <input type="text" id="searchInput" placeholder="Search route, company..." style="
+                            flex: 1;
+                            min-width: 200px;
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.75rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                        " oninput="filterDataTable()">
+                        <select id="companyFilter" onchange="filterDataTable()" style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.75rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                        ">
+                            <option value="">All Companies</option>
+                        </select>
+                        <select id="hourFilter" onchange="filterDataTable()" style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.75rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                        ">
+                            <option value="">All Hours</option>
+                        </select>
+                    </div>
+                    <table id="dataTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortDataTable(0)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>Date</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(1)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>Hour</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(2)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>Route</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(3)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>Total Passengers</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(4)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>SmartCard</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(5)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>QR</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(6)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>Buses</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(7)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>Company</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th onclick="sortDataTable(8)">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: space-between;">
+                                        <span>Pass/Bus</span>
+                                        <div style="display: flex; gap: 0.25rem;">
+                                            <span style="font-size: 0.7rem;">🔽</span>
+                                            <span style="font-size: 0.7rem;">🔍</span>
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="dataTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Interactive Scatter Chart -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🎯 Custom Data Explorer</h2>
+                </div>
+                <div class="chart-card full-width">
+                    <div class="chart-header" style="flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h3 class="chart-title">Interactive Data Visualization</h3>
+                            <p class="chart-subtitle">Choose chart type and axes</p>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="control-group">
+                            <label class="control-label">Chart Type</label>
+                            <select id="chartTypeSelect" onchange="updateScatterChart()">
+                                <option value="line">Line Chart</option>
+                                <option value="bar">Bar Chart</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">X-Axis</label>
+                            <select id="xAxisSelect" onchange="updateScatterChart()">
+                                <option value="hour">Hour</option>
+                                <option value="route">Route</option>
+                                <option value="company">Company</option>
+                                <option value="totalPassengers">Total Passengers</option>
+                                <option value="buses">Number of Buses</option>
+                                <option value="passPerBus">Passengers per Bus</option>
+                                <option value="smartCard">SmartCard Usage</option>
+                                <option value="qr">QR Usage</option>
+                                <option value="smartCardPercent">SmartCard %</option>
+                                <option value="qrPercent">QR %</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Y-Axis</label>
+                            <select id="yAxisSelect" onchange="updateScatterChart()">
+                                <option value="totalPassengers">Total Passengers</option>
+                                <option value="passPerBus">Passengers per Bus</option>
+                                <option value="buses">Number of Buses</option>
+                                <option value="smartCard">SmartCard Usage</option>
+                                <option value="qr">QR Usage</option>
+                                <option value="smartCardPercent">SmartCard %</option>
+                                <option value="qrPercent">QR %</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Filter Company</label>
+                            <select id="scatterCompanyFilter" onchange="updateScatterChart()">
+                                <option value="">All Companies</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Filter Hour</label>
+                            <select id="scatterHourFilter" onchange="updateScatterChart()">
+                                <option value="">All Hours</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Filter Route</label>
+                            <select id="scatterRouteFilter" onchange="updateScatterChart()">
+                                <option value="">All Routes</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Filter Date</label>
+                            <input type="date" id="scatterDateFilter" onchange="updateScatterChart()" style="
+                                background: var(--bg-secondary);
+                                border: 1px solid var(--border);
+                                color: var(--text-primary);
+                                padding: 0.5rem;
+                                border-radius: 8px;
+                                font-size: 0.9rem;
+                            ">
+                        </div>
+                    </div>
+                    <canvas id="scatterChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Global Filters Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🎚️ Global Filters (Affects All Charts Below)</h2>
+                    <button class="toggle-btn" onclick="resetGlobalFilters()">RESET FILTERS</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: var(--bg-card); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border);">
+                    <div class="control-group">
+                        <label class="control-label">Date Range</label>
+                        <input type="date" id="globalDateStart" onchange="applyGlobalFilters()" style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.5rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                            width: 100%;
+                        ">
+                        <input type="date" id="globalDateEnd" onchange="applyGlobalFilters()" style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.5rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                            width: 100%;
+                            margin-top: 0.5rem;
+                        ">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Hour Range</label>
+                        <select id="globalHourStart" onchange="applyGlobalFilters()" style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.5rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                        ">
+                            <option value="">From...</option>
+                        </select>
+                        <select id="globalHourEnd" onchange="applyGlobalFilters()" style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.5rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                            margin-top: 0.5rem;
+                        ">
+                            <option value="">To...</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Company</label>
+                        <select id="globalCompany" onchange="applyGlobalFilters()" multiple style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.5rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                            height: 100px;
+                        ">
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Routes</label>
+                        <input type="text" id="globalRoutes" placeholder="e.g., 1,11,120" onchange="applyGlobalFilters()" style="
+                            background: var(--bg-secondary);
+                            border: 1px solid var(--border);
+                            color: var(--text-primary);
+                            padding: 0.5rem;
+                            border-radius: 8px;
+                            font-size: 0.9rem;
+                        ">
+                        <small style="color: var(--text-muted); margin-top: 0.25rem; display: block;">Comma-separated route numbers</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 1: Company Performance -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Company Performance Overview</h2>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Fleet Size by Company</h3>
+                                <p class="chart-subtitle">Total buses operated</p>
+                            </div>
+                        </div>
+                        <canvas id="companyBusesChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Ridership by Company</h3>
+                                <p class="chart-subtitle">Total passengers served</p>
+                            </div>
+                        </div>
+                        <canvas id="companyPassengersChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Company Efficiency</h3>
+                                <p class="chart-subtitle">Passengers per bus ratio</p>
+                            </div>
+                        </div>
+                        <canvas id="companyEfficiencyChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Payment Methods by Company</h3>
+                                <p class="chart-subtitle">SmartCard vs QR distribution</p>
+                            </div>
+                            <button class="toggle-btn" id="paymentToggle" onclick="togglePaymentMode()">COUNT</button>
+                        </div>
+                        <canvas id="companyPaymentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Peak Hour & Route Analysis -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Peak Hour & Route Analysis</h2>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-card full-width">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">24-Hour Ridership Pattern</h3>
+                                <p class="chart-subtitle">System-wide passenger flow</p>
+                            </div>
+                        </div>
+                        <canvas id="hourlyRidershipChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Top 15 Routes</h3>
+                                <p class="chart-subtitle">By total passengers</p>
+                            </div>
+                        </div>
+                        <canvas id="topRoutesChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Crowding by Hour</h3>
+                                <p class="chart-subtitle">Average passengers per bus</p>
+                            </div>
+                        </div>
+                        <canvas id="crowdingByHourChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hour Comparison Tool -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Hour-to-Hour Comparison</h2>
+                </div>
+                <div class="comparison-container">
+                    <div class="comparison-side">
+                        <div class="comparison-header">
+                            <h3 class="chart-title">Hour 1</h3>
+                            <div class="hour-selector">
+                                <select id="hourSelect1" onchange="updateComparison()">
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="comparison-metrics" id="metrics1"></div>
+                    </div>
+                    <div class="comparison-side">
+                        <div class="comparison-header">
+                            <h3 class="chart-title">Hour 2</h3>
+                            <div class="hour-selector">
+                                <select id="hourSelect2" onchange="updateComparison()">
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="comparison-metrics" id="metrics2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Route Capacity Simulator -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Route Capacity Simulator</h2>
+                </div>
+                <div class="simulator-container">
+                    <div class="simulator-controls">
+                        <div class="control-group">
+                            <label class="control-label">Select Route</label>
+                            <select id="routeSelect" onchange="updateSimulator()">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">Add/Remove Buses</label>
+                            <input type="number" id="busAdjust" min="-10000" max="10000" value="0" step="1" oninput="updateSimulator()" style="
+                                background: var(--bg-secondary);
+                                border: 1px solid var(--border);
+                                color: var(--text-primary);
+                                padding: 0.75rem;
+                                border-radius: 8px;
+                                font-size: 1.2rem;
+                                font-family: 'IBM Plex Mono', monospace;
+                                text-align: center;
+                                font-weight: 600;
+                            ">
+                        </div>
+                        <div class="control-group" style="display: flex; align-items: center; justify-content: center;">
+                            <button class="toggle-btn" style="height: fit-content;" onclick="resetSimulator()">RESET</button>
+                        </div>
+                    </div>
+                    <div class="simulator-results" id="simulatorResults"></div>
+                </div>
+            </div>
+
+            <!-- Underutilized Routes Table -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Bottom 5 Routes - Lowest Passengers per Bus</h2>
+                </div>
+                <div class="table-container">
+                    <table id="underutilizedTable">
+                        <thead>
+                            <tr>
+                                <th>Route</th>
+                                <th>Current Buses</th>
+                                <th>Total Passengers</th>
+                                <th>Passengers/Bus</th>
+                                <th>Suggested Reduction</th>
+                                <th>New Passengers/Bus</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Payment Technology Section -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Payment Technology Adoption</h2>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Overall Payment Split</h3>
+                                <p class="chart-subtitle">System-wide distribution</p>
+                            </div>
+                            <button class="toggle-btn" id="overallPaymentToggle" onclick="toggleOverallPayment()">COUNT</button>
+                        </div>
+                        <canvas id="overallPaymentChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div>
+                                <h3 class="chart-title">Payment by Hour</h3>
+                                <p class="chart-subtitle">Temporal patterns</p>
+                            </div>
+                        </div>
+                        <canvas id="paymentByHourChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let busData = [];
+        let filteredBusData = []; // Data after global filters
+        let paymentMode = 'count'; // 'count' or 'percentage'
+        let overallPaymentMode = 'count';
+        let charts = {};
+        let analytics = {};
+        let globalFilters = {
+            dateStart: null,
+            dateEnd: null,
+            hourStart: null,
+            hourEnd: null,
+            companies: [],
+            routes: []
+        };
+
+        // Handle file upload
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('csvFileInput');
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    document.getElementById('fileUpload').style.display = 'none';
+                    document.getElementById('loading').style.display = 'block';
+                    loadDataFromFile(file);
+                }
+            });
+        });
+
+        // Read and parse CSV from file
+        function loadDataFromFile(file) {
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    busData = results.data.filter(row => row.Date && row.Route);
+                    console.log(`Loaded ${busData.length} records`);
+                    processData();
+                    createDashboard();
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                },
+                error: function(error) {
+                    console.error('Error parsing CSV:', error);
+                    alert('Error loading CSV file. Please make sure it is a valid CSV file.');
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('fileUpload').style.display = 'flex';
+                }
+            });
+        }
+
+        function processData() {
+            // Apply global filters if any
+            filteredBusData = busData.filter(row => {
+                const rowDate = row.Date.split('T')[0];
+                const rowHour = parseInt(row.Hour);
+                const rowCompany = row.Operator;
+                const rowRoute = row.Route;
+
+                // Date filter
+                if (globalFilters.dateStart && rowDate < globalFilters.dateStart) return false;
+                if (globalFilters.dateEnd && rowDate > globalFilters.dateEnd) return false;
+                
+                // Hour filter
+                if (globalFilters.hourStart !== null && rowHour < globalFilters.hourStart) return false;
+                if (globalFilters.hourEnd !== null && rowHour > globalFilters.hourEnd) return false;
+                
+                // Company filter
+                if (globalFilters.companies.length > 0 && !globalFilters.companies.includes(rowCompany)) return false;
+                
+                // Route filter
+                if (globalFilters.routes.length > 0 && !globalFilters.routes.includes(rowRoute)) return false;
+                
+                return true;
+            });
+
+            // Calculate analytics from filtered data
+            analytics.byCompany = {};
+            analytics.byRoute = {};
+            analytics.byHour = {};
+            
+            filteredBusData.forEach(row => {
+                const company = row.Operator;
+                const route = row.Route;
+                const hour = parseInt(row.Hour);
+                const totalCount = parseInt(row['Total Count']) || 0;
+                const smartCard = parseInt(row['By SmartCard']) || 0;
+                const qr = parseInt(row['By QR']) || 0;
+                const buses = parseInt(row['Number Of Busses']) || 0;
+
+                // By Company
+                if (!analytics.byCompany[company]) {
+                    analytics.byCompany[company] = {
+                        totalPassengers: 0,
+                        totalBuses: 0,
+                        smartCard: 0,
+                        qr: 0
+                    };
+                }
+                analytics.byCompany[company].totalPassengers += totalCount;
+                analytics.byCompany[company].totalBuses += buses;
+                analytics.byCompany[company].smartCard += smartCard;
+                analytics.byCompany[company].qr += qr;
+
+                // By Route
+                if (!analytics.byRoute[route]) {
+                    analytics.byRoute[route] = {
+                        totalPassengers: 0,
+                        totalBuses: 0,
+                        smartCard: 0,
+                        qr: 0,
+                        company: company
+                    };
+                }
+                analytics.byRoute[route].totalPassengers += totalCount;
+                analytics.byRoute[route].totalBuses += buses;
+                analytics.byRoute[route].smartCard += smartCard;
+                analytics.byRoute[route].qr += qr;
+
+                // By Hour
+                if (!analytics.byHour[hour]) {
+                    analytics.byHour[hour] = {
+                        totalPassengers: 0,
+                        totalBuses: 0,
+                        smartCard: 0,
+                        qr: 0,
+                        activeRoutes: new Set()
+                    };
+                }
+                analytics.byHour[hour].totalPassengers += totalCount;
+                analytics.byHour[hour].totalBuses += buses;
+                analytics.byHour[hour].smartCard += smartCard;
+                analytics.byHour[hour].qr += qr;
+                analytics.byHour[hour].activeRoutes.add(route);
+            });
+
+            // Convert activeRoutes Set to count
+            Object.keys(analytics.byHour).forEach(hour => {
+                analytics.byHour[hour].activeRoutesCount = analytics.byHour[hour].activeRoutes.size;
+                delete analytics.byHour[hour].activeRoutes;
+            });
+        }
+
+        function setupGlobalFilters() {
+            // Populate hour dropdowns
+            const hourStart = document.getElementById('globalHourStart');
+            const hourEnd = document.getElementById('globalHourEnd');
+            for (let i = 0; i < 24; i++) {
+                hourStart.innerHTML += `<option value="${i}">${i}:00</option>`;
+                hourEnd.innerHTML += `<option value="${i}">${i}:00</option>`;
+            }
+
+            // Populate company dropdown
+            const companies = [...new Set(busData.map(r => r.Operator))].sort();
+            const companySelect = document.getElementById('globalCompany');
+            companies.forEach(company => {
+                companySelect.innerHTML += `<option value="${company}">${company}</option>`;
+            });
+
+            // Set date range from data
+            const dates = busData.map(r => r.Date.split('T')[0]).sort();
+            document.getElementById('globalDateStart').value = dates[0];
+            document.getElementById('globalDateEnd').value = dates[dates.length - 1];
+        }
+
+        function applyGlobalFilters() {
+            const dateStart = document.getElementById('globalDateStart').value;
+            const dateEnd = document.getElementById('globalDateEnd').value;
+            const hourStart = document.getElementById('globalHourStart').value;
+            const hourEnd = document.getElementById('globalHourEnd').value;
+            const companySelect = document.getElementById('globalCompany');
+            const companies = Array.from(companySelect.selectedOptions).map(opt => opt.value);
+            const routesInput = document.getElementById('globalRoutes').value;
+            const routes = routesInput ? routesInput.split(',').map(r => r.trim()) : [];
+
+            globalFilters = {
+                dateStart: dateStart || null,
+                dateEnd: dateEnd || null,
+                hourStart: hourStart ? parseInt(hourStart) : null,
+                hourEnd: hourEnd ? parseInt(hourEnd) : null,
+                companies: companies,
+                routes: routes
+            };
+
+            // Reprocess data and recreate all charts
+            processData();
+            recreateAllCharts();
+        }
+
+        function resetGlobalFilters() {
+            document.getElementById('globalDateStart').value = '';
+            document.getElementById('globalDateEnd').value = '';
+            document.getElementById('globalHourStart').value = '';
+            document.getElementById('globalHourEnd').value = '';
+            document.getElementById('globalCompany').selectedIndex = -1;
+            document.getElementById('globalRoutes').value = '';
+            
+            globalFilters = {
+                dateStart: null,
+                dateEnd: null,
+                hourStart: null,
+                hourEnd: null,
+                companies: [],
+                routes: []
+            };
+
+            processData();
+            recreateAllCharts();
+        }
+
+        function recreateAllCharts() {
+            // Clear KPI grid
+            document.getElementById('kpiGrid').innerHTML = '';
+            
+            // Destroy existing charts
+            Object.values(charts).forEach(chart => {
+                if (chart && chart.destroy) chart.destroy();
+            });
+            charts = {};
+
+            // Recreate everything
+            createKPICards();
+            createCompanyCharts();
+            createPeakHourCharts();
+            createPaymentCharts();
+            updateComparison();
+            updateSimulator();
+            createUnderutilizedTable();
+            updateScatterChart();
+        }
+
+        function createDashboard() {
+            setupGlobalFilters();
+            createKPICards();
+            createDataTable();
+            createScatterChart();
+            createCompanyCharts();
+            createPeakHourCharts();
+            createPaymentCharts();
+            createComparisonTool();
+            createSimulator();
+            createUnderutilizedTable();
+        }
+
+        let currentTableData = [];
+        let currentSortColumn = -1;
+        let sortAscending = true;
+
+        function createDataTable() {
+            // Populate filter dropdowns
+            const companies = [...new Set(busData.map(r => r.Operator))].sort();
+            const companyFilter = document.getElementById('companyFilter');
+            const scatterCompanyFilter = document.getElementById('scatterCompanyFilter');
+            
+            companies.forEach(company => {
+                companyFilter.innerHTML += `<option value="${company}">${company}</option>`;
+                scatterCompanyFilter.innerHTML += `<option value="${company}">${company}</option>`;
+            });
+
+            const hours = [...new Set(busData.map(r => r.Hour))].sort((a, b) => a - b);
+            const hourFilter = document.getElementById('hourFilter');
+            const scatterHourFilter = document.getElementById('scatterHourFilter');
+            
+            hours.forEach(hour => {
+                hourFilter.innerHTML += `<option value="${hour}">${hour}:00</option>`;
+                scatterHourFilter.innerHTML += `<option value="${hour}">${hour}:00</option>`;
+            });
+
+            // Populate route filter
+            const routes = [...new Set(busData.map(r => r.Route))].sort();
+            const scatterRouteFilter = document.getElementById('scatterRouteFilter');
+            routes.forEach(route => {
+                scatterRouteFilter.innerHTML += `<option value="${route}">${route}</option>`;
+            });
+
+            // Prepare table data
+            currentTableData = filteredBusData.slice(0, 1000).map(row => {
+                const totalCount = parseInt(row['Total Count']) || 0;
+                const buses = parseInt(row['Number Of Busses']) || 1;
+                return {
+                    date: row.Date.split('T')[0],
+                    hour: row.Hour,
+                    route: row.Route,
+                    totalPassengers: totalCount,
+                    smartCard: parseInt(row['By SmartCard']) || 0,
+                    qr: parseInt(row['By QR']) || 0,
+                    buses: buses,
+                    company: row.Operator,
+                    passPerBus: (totalCount / buses).toFixed(1)
+                };
+            });
+
+            renderDataTable(currentTableData);
+        }
+
+        function renderDataTable(data) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = data.map(row => `
+                <tr>
+                    <td>${row.date}</td>
+                    <td>${row.hour}:00</td>
+                    <td><strong>${row.route}</strong></td>
+                    <td>${row.totalPassengers.toLocaleString()}</td>
+                    <td>${row.smartCard.toLocaleString()}</td>
+                    <td>${row.qr.toLocaleString()}</td>
+                    <td>${row.buses}</td>
+                    <td>${row.company}</td>
+                    <td>${row.passPerBus}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filterDataTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const companyFilter = document.getElementById('companyFilter').value;
+            const hourFilter = document.getElementById('hourFilter').value;
+
+            const filtered = busData.slice(0, 1000).filter(row => {
+                const matchesSearch = !searchTerm || 
+                    row.Route.toLowerCase().includes(searchTerm) || 
+                    row.Operator.toLowerCase().includes(searchTerm);
+                const matchesCompany = !companyFilter || row.Operator === companyFilter;
+                const matchesHour = !hourFilter || row.Hour === hourFilter;
+                
+                return matchesSearch && matchesCompany && matchesHour;
+            }).map(row => {
+                const totalCount = parseInt(row['Total Count']) || 0;
+                const buses = parseInt(row['Number Of Busses']) || 1;
+                return {
+                    date: row.Date.split('T')[0],
+                    hour: row.Hour,
+                    route: row.Route,
+                    totalPassengers: totalCount,
+                    smartCard: parseInt(row['By SmartCard']) || 0,
+                    qr: parseInt(row['By QR']) || 0,
+                    buses: buses,
+                    company: row.Operator,
+                    passPerBus: (totalCount / buses).toFixed(1)
+                };
+            });
+
+            currentTableData = filtered;
+            renderDataTable(filtered);
+        }
+
+        function sortDataTable(columnIndex) {
+            if (currentSortColumn === columnIndex) {
+                sortAscending = !sortAscending;
+            } else {
+                currentSortColumn = columnIndex;
+                sortAscending = true;
+            }
+
+            const columns = ['date', 'hour', 'route', 'totalPassengers', 'smartCard', 'qr', 'buses', 'company', 'passPerBus'];
+            const sortKey = columns[columnIndex];
+
+            currentTableData.sort((a, b) => {
+                let valA = a[sortKey];
+                let valB = b[sortKey];
+
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                } else {
+                    valA = parseFloat(valA) || 0;
+                    valB = parseFloat(valB) || 0;
+                }
+
+                if (sortAscending) {
+                    return valA > valB ? 1 : valA < valB ? -1 : 0;
+                } else {
+                    return valA < valB ? 1 : valA > valB ? -1 : 0;
+                }
+            });
+
+            renderDataTable(currentTableData);
+        }
+
+        function createScatterChart() {
+            updateScatterChart();
+        }
+
+        function updateScatterChart() {
+            const chartType = document.getElementById('chartTypeSelect').value;
+            const xAxis = document.getElementById('xAxisSelect').value;
+            const yAxis = document.getElementById('yAxisSelect').value;
+            const companyFilter = document.getElementById('scatterCompanyFilter').value;
+            const hourFilter = document.getElementById('scatterHourFilter').value;
+            const routeFilter = document.getElementById('scatterRouteFilter').value;
+            const dateFilter = document.getElementById('scatterDateFilter').value;
+
+            // Prepare data based on X-axis grouping
+            let chartData = [];
+            
+            if (xAxis === 'route') {
+                chartData = Object.entries(analytics.byRoute)
+                    .filter(([route, data]) => {
+                        if (companyFilter && data.company !== companyFilter) return false;
+                        if (routeFilter && route !== routeFilter) return false;
+                        return true;
+                    })
+                    .map(([route, data]) => {
+                        const total = data.smartCard + data.qr;
+                        return {
+                            label: route,
+                            totalPassengers: data.totalPassengers,
+                            buses: data.totalBuses,
+                            passPerBus: data.totalPassengers / data.totalBuses,
+                            smartCard: data.smartCard,
+                            qr: data.qr,
+                            smartCardPercent: total > 0 ? (data.smartCard / total * 100) : 0,
+                            qrPercent: total > 0 ? (data.qr / total * 100) : 0
+                        };
+                    });
+            } else if (xAxis === 'hour') {
+                chartData = Object.entries(analytics.byHour)
+                    .filter(([hour, data]) => {
+                        if (hourFilter && hour !== hourFilter) return false;
+                        return true;
+                    })
+                    .map(([hour, data]) => {
+                        const total = data.smartCard + data.qr;
+                        return {
+                            label: `${hour}:00`,
+                            totalPassengers: data.totalPassengers,
+                            buses: data.totalBuses,
+                            passPerBus: data.totalPassengers / data.totalBuses,
+                            smartCard: data.smartCard,
+                            qr: data.qr,
+                            smartCardPercent: total > 0 ? (data.smartCard / total * 100) : 0,
+                            qrPercent: total > 0 ? (data.qr / total * 100) : 0
+                        };
+                    })
+                    .sort((a, b) => parseInt(a.label) - parseInt(b.label));
+            } else if (xAxis === 'company') {
+                chartData = Object.entries(analytics.byCompany)
+                    .filter(([company, data]) => {
+                        if (companyFilter && company !== companyFilter) return false;
+                        return true;
+                    })
+                    .map(([company, data]) => {
+                        const total = data.smartCard + data.qr;
+                        return {
+                            label: company,
+                            totalPassengers: data.totalPassengers,
+                            buses: data.totalBuses,
+                            passPerBus: data.totalPassengers / data.totalBuses,
+                            smartCard: data.smartCard,
+                            qr: data.qr,
+                            smartCardPercent: total > 0 ? (data.smartCard / total * 100) : 0,
+                            qrPercent: total > 0 ? (data.qr / total * 100) : 0
+                        };
+                    });
+            } else {
+                // For numeric X-axis, group by route
+                chartData = Object.entries(analytics.byRoute)
+                    .filter(([route, data]) => {
+                        if (companyFilter && data.company !== companyFilter) return false;
+                        if (routeFilter && route !== routeFilter) return false;
+                        return true;
+                    })
+                    .map(([route, data]) => {
+                        const total = data.smartCard + data.qr;
+                        return {
+                            label: route,
+                            totalPassengers: data.totalPassengers,
+                            buses: data.totalBuses,
+                            passPerBus: data.totalPassengers / data.totalBuses,
+                            smartCard: data.smartCard,
+                            qr: data.qr,
+                            smartCardPercent: total > 0 ? (data.smartCard / total * 100) : 0,
+                            qrPercent: total > 0 ? (data.qr / total * 100) : 0
+                        };
+                    });
+            }
+
+            const getMetricValue = (item, metric) => {
+                return item[metric] || 0;
+            };
+
+            const labels = chartData.map(item => item.label);
+            const yData = chartData.map(item => getMetricValue(item, yAxis));
+
+            // Generate colors
+            const colorPalette = ['#00f5ff', '#ff6b35', '#00ff9f', '#a855f7', '#ffd93d', '#ff495c', '#06b6d4', '#f59e0b', '#10b981', '#ec4899'];
+            const backgroundColors = chartData.map((_, i) => colorPalette[i % colorPalette.length]);
+
+            if (charts.scatterChart) {
+                charts.scatterChart.destroy();
+            }
+
+            const ctx = document.getElementById('scatterChart').getContext('2d');
+            
+            let chartConfig = {};
+            
+            if (chartType === 'bar') {
+                chartConfig = {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: yAxis.replace(/([A-Z])/g, ' $1').trim(),
+                            data: yData,
+                            backgroundColor: backgroundColors,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 2,
+                        scales: {
+                            x: { 
+                                title: { display: true, text: xAxis.replace(/([A-Z])/g, ' $1').trim(), color: '#8b92a8' },
+                                ticks: { color: '#8b92a8' }, 
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' } 
+                            },
+                            y: { 
+                                title: { display: true, text: yAxis.replace(/([A-Z])/g, ' $1').trim(), color: '#8b92a8' },
+                                ticks: { color: '#8b92a8' }, 
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' } 
+                            }
+                        },
+                        plugins: { legend: { labels: { color: '#e8edf4' } } }
+                    }
+                };
+            } else { // line chart
+                chartConfig = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: yAxis.replace(/([A-Z])/g, ' $1').trim(),
+                            data: yData,
+                            borderColor: '#00f5ff',
+                            backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#00f5ff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        aspectRatio: 2,
+                        scales: {
+                            x: { 
+                                title: { display: true, text: xAxis.replace(/([A-Z])/g, ' $1').trim(), color: '#8b92a8' },
+                                ticks: { color: '#8b92a8' }, 
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' } 
+                            },
+                            y: { 
+                                title: { display: true, text: yAxis.replace(/([A-Z])/g, ' $1').trim(), color: '#8b92a8' },
+                                ticks: { color: '#8b92a8' }, 
+                                grid: { color: 'rgba(255, 255, 255, 0.05)' } 
+                            }
+                        },
+                        plugins: { legend: { labels: { color: '#e8edf4' } } }
+                    }
+                };
+            }
+
+            charts.scatterChart = new Chart(ctx, chartConfig);
+        }
+
+        function createKPICards() {
+            const totalPassengers = Object.values(analytics.byCompany).reduce((sum, c) => sum + c.totalPassengers, 0);
+            const totalBuses = Object.values(analytics.byCompany).reduce((sum, c) => sum + c.totalBuses, 0);
+            const avgPassPerBus = (totalPassengers / totalBuses).toFixed(1);
+            
+            // Find peak hour
+            let peakHour = 0;
+            let maxPassengers = 0;
+            Object.entries(analytics.byHour).forEach(([hour, data]) => {
+                if (data.totalPassengers > maxPassengers) {
+                    maxPassengers = data.totalPassengers;
+                    peakHour = hour;
+                }
+            });
+
+            // Most efficient company
+            let mostEfficient = { name: '', ratio: 0 };
+            Object.entries(analytics.byCompany).forEach(([company, data]) => {
+                const ratio = data.totalPassengers / data.totalBuses;
+                if (ratio > mostEfficient.ratio) {
+                    mostEfficient = { name: company, ratio: ratio.toFixed(1) };
+                }
+            });
+
+            // Most used payment
+            const totalSmartCard = Object.values(analytics.byCompany).reduce((sum, c) => sum + c.smartCard, 0);
+            const totalQR = Object.values(analytics.byCompany).reduce((sum, c) => sum + c.qr, 0);
+            const paymentLeader = totalSmartCard > totalQR ? 'SmartCard' : 'QR Code';
+            const paymentPercent = ((Math.max(totalSmartCard, totalQR) / totalPassengers) * 100).toFixed(1);
+
+            const kpis = [
+                { label: 'Total Passengers', value: totalPassengers.toLocaleString(), subtitle: 'System-wide' },
+                { label: 'Active Buses', value: totalBuses.toLocaleString(), subtitle: 'Fleet size' },
+                { label: 'Avg Pass/Bus', value: avgPassPerBus, subtitle: 'System efficiency' },
+                { label: 'Peak Hour', value: `${peakHour}:00`, subtitle: `${maxPassengers.toLocaleString()} passengers` },
+                { label: 'Most Efficient', value: mostEfficient.name, subtitle: `${mostEfficient.ratio} pass/bus` },
+                { label: 'Payment Leader', value: paymentLeader, subtitle: `${paymentPercent}% adoption` }
+            ];
+
+            const grid = document.getElementById('kpiGrid');
+            kpis.forEach(kpi => {
+                grid.innerHTML += `
+                    <div class="kpi-card">
+                        <div class="kpi-label">${kpi.label}</div>
+                        <div class="kpi-value">${kpi.value}</div>
+                        <div class="kpi-subtitle">${kpi.subtitle}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function createCompanyCharts() {
+            const companies = Object.keys(analytics.byCompany);
+            
+            // Fleet Size Chart
+            const fleetData = companies.map(c => analytics.byCompany[c].totalBuses);
+            createBarChart('companyBusesChart', companies, fleetData, 'Total Buses', '#00f5ff');
+
+            // Ridership Chart
+            const ridershipData = companies.map(c => analytics.byCompany[c].totalPassengers);
+            createBarChart('companyPassengersChart', companies, ridershipData, 'Total Passengers', '#ff6b35');
+
+            // Efficiency Chart
+            const efficiencyData = companies.map(c => (analytics.byCompany[c].totalPassengers / analytics.byCompany[c].totalBuses).toFixed(1));
+            createBarChart('companyEfficiencyChart', companies, efficiencyData, 'Passengers per Bus', '#00ff9f');
+
+            // Payment Chart (Stacked)
+            createCompanyPaymentChart();
+        }
+
+        function createCompanyPaymentChart() {
+            const companies = Object.keys(analytics.byCompany);
+            const smartCardData = companies.map(c => analytics.byCompany[c].smartCard);
+            const qrData = companies.map(c => analytics.byCompany[c].qr);
+
+            if (charts.companyPaymentChart) {
+                charts.companyPaymentChart.destroy();
+            }
+
+            const ctx = document.getElementById('companyPaymentChart').getContext('2d');
+            charts.companyPaymentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: companies,
+                    datasets: [
+                        {
+                            label: 'SmartCard',
+                            data: paymentMode === 'count' ? smartCardData : smartCardData.map((v, i) => ((v / (v + qrData[i])) * 100).toFixed(1)),
+                            backgroundColor: 'rgba(0, 245, 255, 0.8)',
+                        },
+                        {
+                            label: 'QR Code',
+                            data: paymentMode === 'count' ? qrData : qrData.map((v, i) => ((v / (smartCardData[i] + v)) * 100).toFixed(1)),
+                            backgroundColor: 'rgba(255, 107, 53, 0.8)',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.5,
+                    scales: {
+                        x: { 
+                            stacked: true,
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: { 
+                            stacked: true,
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            title: { display: true, text: paymentMode === 'count' ? 'Passengers' : 'Percentage (%)', color: '#8b92a8' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#e8edf4', font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function togglePaymentMode() {
+            paymentMode = paymentMode === 'count' ? 'percentage' : 'count';
+            document.getElementById('paymentToggle').textContent = paymentMode.toUpperCase();
+            createCompanyPaymentChart();
+        }
+
+        function createPeakHourCharts() {
+            // Hourly Ridership
+            const hours = Array.from({length: 24}, (_, i) => i);
+            const hourlyPassengers = hours.map(h => analytics.byHour[h]?.totalPassengers || 0);
+            
+            const ctx = document.getElementById('hourlyRidershipChart').getContext('2d');
+            charts.hourlyRidershipChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours.map(h => `${h}:00`),
+                    datasets: [{
+                        label: 'Total Passengers',
+                        data: hourlyPassengers,
+                        borderColor: '#00f5ff',
+                        backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 3,
+                    scales: {
+                        x: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#e8edf4' }
+                        }
+                    }
+                }
+            });
+
+            // Top Routes
+            const sortedRoutes = Object.entries(analytics.byRoute)
+                .sort((a, b) => b[1].totalPassengers - a[1].totalPassengers)
+                .slice(0, 15);
+            const routeLabels = sortedRoutes.map(r => r[0]);
+            const routeData = sortedRoutes.map(r => r[1].totalPassengers);
+            
+            createBarChart('topRoutesChart', routeLabels, routeData, 'Passengers', '#a855f7', true);
+
+            // Crowding by Hour
+            const crowdingData = hours.map(h => {
+                const data = analytics.byHour[h];
+                return data ? (data.totalPassengers / data.totalBuses).toFixed(1) : 0;
+            });
+            
+            const ctx3 = document.getElementById('crowdingByHourChart').getContext('2d');
+            charts.crowdingByHourChart = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: hours.map(h => `${h}:00`),
+                    datasets: [{
+                        label: 'Passengers per Bus',
+                        data: crowdingData,
+                        backgroundColor: crowdingData.map(v => {
+                            if (v > 80) return 'rgba(255, 107, 53, 0.8)';
+                            if (v > 50) return 'rgba(255, 217, 61, 0.8)';
+                            return 'rgba(0, 255, 159, 0.8)';
+                        })
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.5,
+                    scales: {
+                        x: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#e8edf4' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createBarChart(canvasId, labels, data, label, color, horizontal = false) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            charts[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: color,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: horizontal ? 'y' : 'x',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: horizontal ? 1 : 1.5,
+                    scales: {
+                        x: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#e8edf4' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createPaymentCharts() {
+            // Overall payment split
+            createOverallPaymentChart();
+
+            // Payment by hour
+            const hours = Array.from({length: 24}, (_, i) => i);
+            const smartCardByHour = hours.map(h => analytics.byHour[h]?.smartCard || 0);
+            const qrByHour = hours.map(h => analytics.byHour[h]?.qr || 0);
+
+            const ctx = document.getElementById('paymentByHourChart').getContext('2d');
+            charts.paymentByHourChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: hours.map(h => `${h}:00`),
+                    datasets: [
+                        {
+                            label: 'SmartCard',
+                            data: smartCardByHour,
+                            borderColor: '#00f5ff',
+                            backgroundColor: 'rgba(0, 245, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'QR Code',
+                            data: qrByHour,
+                            borderColor: '#ff6b35',
+                            backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.5,
+                    scales: {
+                        x: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        },
+                        y: { 
+                            ticks: { color: '#8b92a8' },
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#e8edf4' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createOverallPaymentChart() {
+            const totalSmartCard = Object.values(analytics.byCompany).reduce((sum, c) => sum + c.smartCard, 0);
+            const totalQR = Object.values(analytics.byCompany).reduce((sum, c) => sum + c.qr, 0);
+            const total = totalSmartCard + totalQR;
+
+            const data = overallPaymentMode === 'count' 
+                ? [totalSmartCard, totalQR]
+                : [(totalSmartCard / total * 100).toFixed(1), (totalQR / total * 100).toFixed(1)];
+
+            if (charts.overallPaymentChart) {
+                charts.overallPaymentChart.destroy();
+            }
+
+            const ctx = document.getElementById('overallPaymentChart').getContext('2d');
+            charts.overallPaymentChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['SmartCard', 'QR Code'],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['rgba(0, 245, 255, 0.8)', 'rgba(255, 107, 53, 0.8)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1.5,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { color: '#e8edf4', padding: 20, font: { size: 14 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed;
+                                    const suffix = overallPaymentMode === 'count' ? '' : '%';
+                                    return `${label}: ${value.toLocaleString()}${suffix}`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: true,
+                            color: '#fff',
+                            font: { size: 16, weight: 'bold' },
+                            formatter: function(value, context) {
+                                const suffix = overallPaymentMode === 'count' ? '' : '%';
+                                return value.toLocaleString() + suffix;
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    afterDatasetDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        chart.data.datasets.forEach(function(dataset, i) {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach(function(element, index) {
+                                ctx.fillStyle = '#fff';
+                                const fontSize = 16;
+                                const fontStyle = 'bold';
+                                const fontFamily = 'Outfit';
+                                ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
+                                
+                                const dataString = dataset.data[index].toString();
+                                const suffix = overallPaymentMode === 'count' ? '' : '%';
+                                const text = dataString + suffix;
+                                
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                
+                                const position = element.tooltipPosition();
+                                ctx.fillText(text, position.x, position.y);
+                            });
+                        });
+                    }
+                }]
+            });
+        }
+
+        function toggleOverallPayment() {
+            overallPaymentMode = overallPaymentMode === 'count' ? 'percentage' : 'count';
+            document.getElementById('overallPaymentToggle').textContent = overallPaymentMode.toUpperCase();
+            createOverallPaymentChart();
+        }
+
+        function createComparisonTool() {
+            const hourSelect1 = document.getElementById('hourSelect1');
+            const hourSelect2 = document.getElementById('hourSelect2');
+            
+            for (let i = 0; i < 24; i++) {
+                hourSelect1.innerHTML += `<option value="${i}">${i}:00</option>`;
+                hourSelect2.innerHTML += `<option value="${i}">${i}:00</option>`;
+            }
+            
+            hourSelect1.value = 7; // Default morning
+            hourSelect2.value = 17; // Default evening
+            
+            updateComparison();
+        }
+
+        function updateComparison() {
+            const hour1 = parseInt(document.getElementById('hourSelect1').value);
+            const hour2 = parseInt(document.getElementById('hourSelect2').value);
+            
+            const data1 = analytics.byHour[hour1] || {};
+            const data2 = analytics.byHour[hour2] || {};
+            
+            displayMetrics('metrics1', data1, hour1);
+            displayMetrics('metrics2', data2, hour2);
+        }
+
+        function displayMetrics(containerId, data, hour) {
+            const metrics = [
+                { label: 'Total Passengers', value: (data.totalPassengers || 0).toLocaleString() },
+                { label: 'Total Buses', value: (data.totalBuses || 0).toLocaleString() },
+                { label: 'Pass/Bus Ratio', value: data.totalBuses ? (data.totalPassengers / data.totalBuses).toFixed(1) : '0' },
+                { label: 'Active Routes', value: data.activeRoutesCount || 0 },
+                { label: 'SmartCard Usage', value: (data.smartCard || 0).toLocaleString() },
+                { label: 'QR Code Usage', value: (data.qr || 0).toLocaleString() }
+            ];
+            
+            const container = document.getElementById(containerId);
+            container.innerHTML = metrics.map(m => `
+                <div class="metric-row">
+                    <span class="metric-label">${m.label}</span>
+                    <span class="metric-value">${m.value}</span>
+                </div>
+            `).join('');
+        }
+
+        function createSimulator() {
+            const routeSelect = document.getElementById('routeSelect');
+            const routes = Object.keys(analytics.byRoute).sort();
+            
+            routes.forEach(route => {
+                routeSelect.innerHTML += `<option value="${route}">${route}</option>`;
+            });
+            
+            updateSimulator();
+        }
+
+        function updateSimulator() {
+            const route = document.getElementById('routeSelect').value;
+            const adjustment = parseInt(document.getElementById('busAdjust').value) || 0;
+            
+            const routeData = analytics.byRoute[route];
+            if (!routeData) return;
+            
+            const currentBuses = routeData.totalBuses;
+            const newBuses = Math.max(1, currentBuses + adjustment);
+            const passengers = routeData.totalPassengers;
+            
+            const currentRatio = (passengers / currentBuses).toFixed(1);
+            const newRatio = (passengers / newBuses).toFixed(1);
+            
+            const systemAvg = Object.values(analytics.byRoute).reduce((sum, r) => sum + (r.totalPassengers / r.totalBuses), 0) / Object.keys(analytics.byRoute).length;
+            const currentGap = ((currentRatio - systemAvg) / systemAvg * 100).toFixed(1);
+            const newGap = ((newRatio - systemAvg) / systemAvg * 100).toFixed(1);
+            
+            const results = [
+                { 
+                    label: 'Current Buses', 
+                    value: currentBuses,
+                    change: adjustment !== 0 ? `→ ${newBuses}` : ''
+                },
+                { 
+                    label: 'Pass/Bus', 
+                    value: currentRatio,
+                    change: adjustment !== 0 ? `→ ${newRatio}` : '',
+                    changeClass: adjustment > 0 ? 'negative' : 'positive'
+                },
+                { 
+                    label: 'vs System Avg', 
+                    value: `${currentGap}%`,
+                    change: adjustment !== 0 ? `→ ${newGap}%` : '',
+                    changeClass: Math.abs(newGap) < Math.abs(currentGap) ? 'positive' : 'negative'
+                },
+                { 
+                    label: 'Status', 
+                    value: newRatio > 80 ? '🔴 Overcrowded' : newRatio > 50 ? '🟡 Busy' : '🟢 Comfortable',
+                    change: ''
+                }
+            ];
+            
+            const container = document.getElementById('simulatorResults');
+            container.innerHTML = results.map(r => `
+                <div class="result-card">
+                    <div class="result-label">${r.label}</div>
+                    <div class="result-value">${r.value}</div>
+                    ${r.change ? `<div class="result-change ${r.changeClass || ''}">${r.change}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function resetSimulator() {
+            document.getElementById('busAdjust').value = 0;
+            updateSimulator();
+        }
+
+        function createUnderutilizedTable() {
+            const routes = Object.entries(analytics.byRoute)
+                .map(([route, data]) => ({
+                    route,
+                    buses: data.totalBuses,
+                    passengers: data.totalPassengers,
+                    ratio: data.totalPassengers / data.totalBuses
+                }))
+                .sort((a, b) => a.ratio - b.ratio) // Sort by lowest ratio
+                .slice(0, 5); // Take bottom 5
+            
+            const tbody = document.querySelector('#underutilizedTable tbody');
+            
+            if (routes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No route data available</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = routes.map(r => {
+                const reduction = Math.max(1, Math.floor(r.buses * 0.3)); // Suggest 30% reduction, minimum 1
+                const newBuses = Math.max(1, r.buses - reduction);
+                const newRatio = (r.passengers / newBuses).toFixed(1);
+                
+                return `
+                    <tr>
+                        <td><strong>${r.route}</strong></td>
+                        <td>${r.buses}</td>
+                        <td>${r.passengers.toLocaleString()}</td>
+                        <td>${r.ratio.toFixed(1)}</td>
+                        <td>-${reduction} ${reduction === 1 ? 'bus' : 'buses'}</td>
+                        <td>${newRatio}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+    </script>
+</body>
+</html>

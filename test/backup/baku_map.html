@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Baku Locations Map - Interactive View</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: 100%; }
+        .location-popup { 
+            font-weight: bold; 
+            font-size: 14px;
+            padding: 5px;
+        }
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 250px;
+        }
+        .info-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .info-panel p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="info-panel">
+        <h3>📍 Baku Locations</h3>
+        <p><strong>Total Locations:</strong> 52</p>
+        <p><small>Click on markers to see location names</small></p>
+    </div>
+    <script>
+        var map = L.map('map').setView([40.4093, 49.8671], 11);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        var locations = [{"title": "AAAF Park Yaşayış Kompleksi", "lat": -85.0511287798066, "lon": 470288.671875}, {"title": "Baku Engineering University", "lat": -85.0511287798066, "lon": 470299.921875}, {"title": "Bank Respublika Arena", "lat": -85.0511287798066, "lon": 470380.78125}, {"title": "Mud Volcano", "lat": -85.0511287798066, "lon": 470431.40625}, {"title": "Binagadi Settlement", "lat": -85.0511287798066, "lon": 470508.75}, {"title": "Nurlu Yaşayış Massivi", "lat": -85.0511287798066, "lon": 470430.703125}, {"title": "Sabunçu Xəstəxanası", "lat": -85.0511287798066, "lon": 470741.484375}, {"title": "Balakhani", "lat": -85.0511287798066, "lon": 470701.40625}, {"title": "Hökməli", "lat": -85.0511287798066, "lon": 470308.359375}, {"title": "Heydər Məscidi", "lat": -85.0511287798066, "lon": 470499.609375}, {"title": "Milli Onkologiya Mərkəzi", "lat": -85.0511287798066, "lon": 470458.828125}, {"title": "Biləcəri", "lat": -85.0511287798066, "lon": 470460.234375}, {"title": "Sulutəpə", "lat": -85.0511287798066, "lon": 470394.140625}, {"title": "9-cu Mikrorayon", "lat": -85.0511287798066, "lon": 470479.21875}, {"title": "Xocəsən", "lat": -85.0511287798066, "lon": 470378.671875}, {"title": "Bakı bulvarı", "lat": -85.0511287798066, "lon": 470538.984375}, {"title": "Dağüstü park", "lat": -85.0511287798066, "lon": 470508.75}, {"title": "Crescent Mall", "lat": -85.0511287798066, "lon": 470573.4375}, {"title": "\"SURAXANI\" GƏMİ-MUZEYİ", "lat": -85.0511287798066, "lon": 470536.171875}, {"title": "Badamdar", "lat": -85.0511287798066, "lon": 470458.125}, {"title": "Şıx", "lat": -85.0511287798066, "lon": 470453.90625}, {"title": "Congress Hall Of Baku Higher Oil School", "lat": -85.0511287798066, "lon": 470506.640625}, {"title": "Şubanı", "lat": -85.0511287798066, "lon": 470380.78125}, {"title": "Heydər Əliyev Mərkəzi", "lat": -85.0511287798066, "lon": 470588.90625}, {"title": "Yeni klinika", "lat": -85.0511287798066, "lon": 470652.890625}, {"title": "Nizami Tibb Mərkəzi", "lat": -85.0511287798066, "lon": 470692.96875}, {"title": "Baku Olimpiya Stadionu", "lat": -85.0511287798066, "lon": 470695.078125}, {"title": "Bakı Ağ Şəhər", "lat": -85.0511287798066, "lon": 470631.09375}, {"title": "Həzi Aslanov", "lat": -85.0511287798066, "lon": 470704.921875}, {"title": "Dərnəgül", "lat": -85.0511287798066, "lon": 470553.046875}, {"title": "NZS", "lat": -85.0511287798066, "lon": 470683.828125}, {"title": "Gənclik Park", "lat": -85.0511287798066, "lon": 470753.4375}, {"title": "Appro Hospital", "lat": -85.0511287798066, "lon": 470882.8125}, {"title": "Ramana qalası", "lat": -85.0511287798066, "lon": 470818.828125}, {"title": "Zabrat Hava Limanı", "lat": -85.0511287798066, "lon": 470799.140625}, {"title": "Ramana Yaşayış kompleksi Grandmart supermarket", "lat": -85.0511287798066, "lon": 470849.765625}, {"title": "Heydər Əliyev Adına Beynəlxalq Hava Limanı", "lat": -85.0511287798066, "lon": 470966.484375}, {"title": "Agilli Bala- montoseri merkezi", "lat": -85.0511287798066, "lon": 471012.1875}, {"title": "Binə", "lat": -85.0511287798066, "lon": 471066.328125}, {"title": "Baku Medical Plaza", "lat": -85.0511287798066, "lon": 470787.1875}, {"title": "Mәlhәm Beynəlxalq Hospital", "lat": -85.0511287798066, "lon": 470766.796875}, {"title": "Bakıxanov", "lat": -85.0511287798066, "lon": 470757.65625}, {"title": "Əhmədli", "lat": -85.0511287798066, "lon": 470759.0625}, {"title": "Yeni Günəşli", "lat": -85.0511287798066, "lon": 470820.9375}, {"title": "Əmircan", "lat": -85.0511287798066, "lon": 470833.59375}, {"title": "Şərq Massivi", "lat": -85.0511287798066, "lon": 470837.8125}, {"title": "6th Madan", "lat": -85.0511287798066, "lon": 470885.625}, {"title": "Zığ", "lat": -85.0511287798066, "lon": 470814.609375}, {"title": "Dreamland Golf Club", "lat": -85.0511287798066, "lon": 471053.671875}, {"title": "Yeni Suraxanı", "lat": -85.0511287798066, "lon": 470930.625}, {"title": "Aviamodellərin uçuş meydançası", "lat": -85.0511287798066, "lon": 471138.046875}, {"title": "Hövsan Mall", "lat": -85.0511287798066, "lon": 471015.0}];
+        
+        locations.forEach(function(loc) {
+            var marker = L.marker([loc.lat, loc.lon]).addTo(map);
+            marker.bindPopup('<div class="location-popup">' + loc.title + '</div>');
+            marker.bindTooltip(loc.title, {permanent: false, direction: 'top'});
+        });
+        
+        console.log('✓ Loaded ' + locations.length + ' locations from Baku area');
+    </script>
+</body>
+</html>

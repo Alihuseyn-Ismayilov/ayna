@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+pandas
+geopandas
+pydantic
+selenium
+python-multipart
+

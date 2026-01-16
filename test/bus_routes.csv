@@ -1,0 +1,206 @@
+id,number,firstPoint,lastPoint,carrier,tariff,duration,stops_count
+1,1,Neftçilər m/st,28 May m/st,BakuBus MMC,0.60 AZN,43,45
+2,2,Dərnəgül m/st ,Avtovağzal NMM,BakuBus MMC,0.60 AZN,73,91
+3,3,Dərnəgül m/st,Badamdar qəs. ,BakuBus MMC,0.60 AZN,64,91
+4,4,Montin yaş. mas. ,Bakı Ağ şəhər yaş.mas.,BakuBus MMC,0.60 AZN,48,60
+5,5,20-ci Sahə dairəsi,Nəriman Nərimanov m/st. ,BakuBus MMC,0.60 AZN,39,55
+6,6,Azadlıq pr. m/st ,20-ci Sahə yaş.mas.,BakuBus MMC,0.60 AZN,62,87
+7,9,Nəriman Nərimanov m/st. ,Yasamal yaşayış kompleksi (MİDA),Xaliq Faiqoğlu MMC,0.50 AZN,45,54
+8,10,Yasamal yaşayış kompleksi (MİDA),Bakı Ağ şəhər yaş.mas.,BakuBus MMC,0.60 AZN,59,75
+9,11,Dəmiryol vağzalı ,İbrahim Əbilov küç.,BakuBus MMC,0.60 AZN,67,83
+10,12,Vərəm dispanseri ,Cavanşir küç.,Vətən.Az-Trans MMC,0.50 AZN,38,58
+11,13,Koroğlu NMM,Avtovağzal NMM,BakuBus MMC,0.60 AZN,55,54
+12,14,Avtovağzal NMM,28 May m/st ,BakuBus MMC,0.60 AZN,45,59
+13,15,Koroğlu NMM,Keşlə qəs. ,General - Auto - Company firması,0.50 AZN,48,71
+14,17,11 saylı məktəb,Yeni Yasamal yaş.massivi,BakuBus MMC,0.60 AZN,58,84
+15,18,Nizami bağı,9-cu mikrorayon ,Xaliq Faiqoğlu MMC,0.60 AZN,54,86
+16,20,Qaraçuxur qəsəbəsi,Tibb universiteti,BakuBus MMC,0.60 AZN,81,117
+17,21,Əhmədli m/st ,28 May m/st ,BakuBus MMC,0.60 AZN,53,77
+18,22,Sabunçu qəs.,NZS yaş.mas.,Kənan-2000 şirkəti,0.50 AZN,51,71
+19,24,Qaraçuxur qəs. ,11 saylı məktəb,BakuBus MMC,0.60 AZN,79,99
+20,26,8 saylı şəhər poliklinikası,9-cu mkr  ,Vətən firması,0.50 AZN,35,61
+21,29,Avtovağzal NMM,Badamdar qəs. ,MENLOQQ MMC,0.50 AZN,41,56
+22,30,28 May m/st ,C.Naxçıvanski küç.,BakuBus MMC,0.60 AZN,48,78
+23,31,Nizami bağı ,Badamdar  qəs.,Fidan MMC,0.50 AZN,30,46
+24,32,28 May m/st ,Cəmşid Naxçıvanski küç.,BakuBus MMC,0.60 AZN,54,81
+25,33,Dərnəgül m/st,28 Mall ticarət mərkəzi,BakuBus MMC,0.60 AZN,54,61
+26,35,Suraxanı rayonu,Ramiz Quliyev küçəsi,BakuBus MMC,0.60 AZN,57,85
+27,36,Yeni Günəsli qəs. ,Ulduz m/st ,Vətən.Az-Trans MMC,0.50 AZN,63,77
+28,37,Nizami bağı ,Avtovağzal NMM,Xaliq Faiqoğlu MMC,0.50 AZN,31,42
+29,38,Keşlə qəs.,Tibb Universiteti ,General - Auto - Company firması,0.60 AZN,45,57
+30,39,Elmlər Akademiyası m/st,Yeni Yasamal yaş. mass.,Kral Transport MMC,0.50 AZN,27,50
+31,40,Sabunçu qəs.,Günəşli qəs.,Çinar-Trans MMC,0.60 AZN,56,91
+32,41,Azadlıq pr. m/st,Binəqədi qəs.,Xaliq Faiqoğlu MMC,0.50 AZN,28,20
+33,42,Əhmədli m/st,Kazımağa Kərimov küç.,Kral Transport MMC,0.50 AZN,14,5
+34,44,Neftçilər m/st,Murtuza Muxtarov adına park,BakuBus MMC,0.60 AZN,65,92
+35,45,Azadlıq pr. m/st ,M.Rəsulzadə qəs.,Xaliq Faiqoğlu MMC,0.50 AZN,10,11
+36,46,28 May m/st ,Günəşli qəs.,BakuBus MMC,0.60 AZN,62,90
+37,49,28 May m/st ,68 № məktəb ,Azlənd Plaza MMC,0.50 AZN,72,114
+38,50,Neftçilər m/st,Yeni Günəsli qəs. ,Vətən.Az-Trans MMC,0.50 AZN,25,32
+39,51,M.Abbasov küç.,Polad Həşimov k.,BUS TRANS MMC,0.50 AZN,46,69
+40,52,Xarici İşlər Nazirliyi ,M.Kazımovski küç.,Xaliq Faiqoğlu MMC,0.50 AZN,30,50
+41,53,Elmlər Akademiyası m.st.,Bayıl parkı,Fidan MMC,0.50 AZN,39,46
+42,54,Xalqlar Dostluğu m.st.,Sabunçu qəs.,Grand Bus MMC,0.50 AZN,25,23
+43,55,Yeni Günəşli qəs. ,Sabunçu qəs.,M.S.S.Company MMC,0.50 AZN,43,77
+44,56,Bayıl yaş.mas.,20-ci Sahə y.m,Xan Nəqliyyat MMC,0.50 AZN,12,9
+45,57,Bakıxanov qəs.,C.Hacıəliyev küç.,BakuBus MMC,0.60 AZN,50,78
+46,60,Polad Həşimov k.,Koroğlu m/st,BakuBus MMC,0.60 AZN,67,94
+47,61,Azadlıq pr.,9-cu mkr ,Xaliq Faiqoğlu MMC,0.60 AZN,31,55
+48,62,Sabunçu qəs.,N.Tusi küç.,BakuBus MMC,0.60 AZN,52,63
+49,64,Neftçilər m/st,Yeni Günəşli qəs. ,General - Auto - Company firması,0.50 AZN,33,51
+50,65,9-cu mkr ,Azneft dairəsi ,Xaliq Faiqoğlu MMC,0.60 AZN,33,50
+51,66,Əmircan qəs. ,Neftçilər m/st ,Çinar-Trans MMC,0.50 AZN,24,39
+52,67,Çernyayevski küç.,Biləcəri qəs.,MENLOQQ MMC,0.50 AZN,51,73
+53,70,AzərSu Tikinti Xəstəxanası ,Sabunçu qəs.,Kənan-2000 şirkəti,0.50 AZN,55,64
+54,71,Koroğlu NMM,Azadlıq pr. m/st ,MENLOQQ MMC,0.50 AZN,39,55
+55,72,Sədərək t/m,Köhnə Günəşli qəs. ,BakuBus MMC,0.60 AZN,97,34
+56,76,Neftçilər m/st ,Bakıxanov qəs.,Şidli-A.İ. şirkəti,0.50 AZN,22,40
+57,77,M.F.Axundov adına bağ ,Yeni Yasamal y/m,Orucov Malik Ələkbər oğlu,0.50 AZN,26,46
+58,78,Azər Manafov küçəsi,Bakıxanov qəs.,Şidli-A.İ. şirkəti,0.50 AZN,27,51
+59,79,Mərkəzi Bank ,M.Ə.Rəsulzadə qəs.,Xaliq Faiqoğlu MMC,0.50 AZN,41,59
+60,81,Köhnə Günəşli qəs.,Qaraçuxur qəs. ,Çinar-Trans MMC,0.60 AZN,44,88
+61,83,Təbriz küç. ,Biləcəri qəs. ,MENLOQQ MMC,0.50 AZN,44,65
+62,85,9-cu mkr,Mərkəzi Bank,Xaliq Faiqoğlu MMC,0.50 AZN,42,54
+63,88,Dərnəgül m/st ,20-ci Sahə dairəsi,BakuBus MMC,0.60 AZN,57,76
+64,91,Avtovağzal NMM,Binəqədi ray.,Çinar-Trans MMC,0.50 AZN,32,42
+65,92,Binəqədi ray. (Dairəvi küç),Memar Əcəmi m/st ,Üç qardaş şirkəti,0.50 AZN,43,68
+66,93,Dərnəgül m/st ,Sabunçu qəs.,Kral Transport MMC,0.50 AZN,58,51
+67,96,Xarici İşlər Nazirliyi ,Avtovağzal NMM,Xaliq Faiqoğlu MMC,0.50 AZN,51,71
+68,100,Azadlıq pr. m/st ,Binəqədi şos.,Çinar-Trans MMC,0.50 AZN,27,32
+69,101,Mərdəkan qəs.,Türkan qəs.,6 Dost MMC,0.60 AZN,76,42
+70,102,20 Yanvar m/st (M.Həsənov küç.),Xocəsən qəs. ,BUS TRANS MMC,0.50 AZN,33,41
+71,103,C.Naxçıvanski küç.,Hövsan qəs. ,MENLOQQ MMC,0.60 AZN,82,110
+72,104,H.Aslanov m/st ,Yeni Suraxanı qəs.,BUS TRANS MMC,0.60 AZN,69,104
+73,105,C.Naxçıvanski küç.,Balaxanı qəs. ,Bus Service MMC,0.60 AZN,64,73
+74,106,Q.Qarayev pr.,Yeni Suraxanı qəs.,BUS TRANS MMC,0.50 AZN,52,62
+75,107,Koroğlu NMM,Buzovna qəs.,Ayşən LTD MMC,0.70 AZN,100,99
+76,110,Binə qəs. ,Binə-Sovxoz yaş.mass.,6 Dost MMC,0.50 AZN,24,0
+77,111,Lökbatan qəs. ,Lökbatan qəs.,BMHMMC,0.50 AZN,22,35
+78,112,Şüvəlan qəs.,Zağulba şos. ,BUS TRANS MMC,0.60 AZN,79,46
+79,113,Q.Qarayev pr. kənar hərəkət hiss. ,Əmircan qəs.,Transkontrol MMC,0.50 AZN,40,51
+80,119,Memar Əcəmi m/st,Xırdalan şəh.,Xaliq Faiqoğlu MMC,0.50 AZN,47,35
+81,120,28 May m/st ,Hövsan yaş.komp.,BakuBus MMC,0.70 AZN,96,109
+82,123,“Azadlıq pr.” m.st.,Sumqayıt şəh. ,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.60 AZN,101,42
+83,125,28 May m/st ,Lökbatan qəs. ,BakuBus MMC,0.70 AZN,75,78
+84,126,Sədərək t/m,Şonqar qəs.,BMHMMC,0.60 AZN,76,47
+85,130,Lökbatan qəs.,20 Yanvar m/st ,BakuBus MMC,0.65 AZN,89,92
+86,131,Koroğlu NMM,Maştağa qəs.,General - Auto - Company firması,0.55 AZN,70,91
+87,132,Əhmədli m/st,Hövsan qəs. ,Kral Transport MMC,0.55 AZN,69,82
+88,133,Gənclik m/st,Binəqədi qəs.,Çinar-Trans MMC,0.60 AZN,42,50
+89,135,Memar Əcəmi m/st,Xırdalan şəh.,Xaliq Faiqoğlu MMC,0.50 AZN,43,41
+90,137,Firdovsi Vəliyev küçəsi,Avtovağzal NMM,Monella MMC,0.50 AZN,34,0
+91,139,Koroğlu NMM,Savalan yaş. mas. ,BakuBus MMC,0.65 AZN,51,50
+92,140,Koroğlu NMM,Şüvəlan qəs. ,BakuBus MMC,0.70 AZN,104,73
+93,141,C.Naxçıvanski küç.,Mərdəkan qəs. ,STATUS AVTO MMC,0.70 AZN,117,103
+94,142,Masazır kəndi,20 Yanvar m/st,Kənan-2000 şirkəti,0.50 AZN,38,26
+95,143,Şüvəlan qəs. ,Mərdəkan qəs. ,6 Dost MMC,0.50 AZN,16,7
+97,145,Mehdiabad qəs.,Ulduz m.st,Çinar-Trans MMC,0.50 AZN,56,19
+98,146,Yeni Suraxanı qəs. ,Şüvəlan qəs. ,6 Dost MMC,0.60 AZN,69,51
+99,147,Azadlıq pr. m/st ,Məmmədli qəs.,BakuBus MMC,0.60 AZN,52,42
+100,148,Koroğlu NMM,Zabrat qəs.,Grand Bus MMC,0.50 AZN,39,44
+101,149,Sahil qəs. ,Sahil m/st ,BakuBus MMC,0.80 AZN,117,63
+102,150,Bilgəh q. ,Koroğlu NMM,BakuBus MMC,0.80 AZN,111,59
+103,155,Xocəsən qəsəbəsi Sağlamlıq mərkəzi,Xocəsən qəsəbəsi Yeni yaş.mas.,BUS TRANS MMC,0.50 AZN,35,32
+104,157,Sulutəpə qəs.,Avtovağzal NMM,BUS TRANS MMC,0.60 AZN,36,46
+105,158,Memar Əcəmi m.st.,Xocəsən qəsəbəsi,Qusar Trans MMC,0.60 AZN,32,16
+106,159,20 Yanvar m/st ,Çiçək qəs.,Sahil MMC,0.50 AZN,34,34
+107,160,Koroğlu NMM,Binə qəs. ,Çinar-Trans MMC,0.60 AZN,77,63
+108,161,Suraxanı qəs. ,Hövsan qəs.,Azlənd Plaza MMC,0.55 AZN,52,57
+109,162,Koroğlu NMM,Ramana Yeni yaşayış kompleksi,6 Dost MMC,0.60 AZN,54,52
+110,163,Ramana Yeni yaşayış kompleksi,Koroğlu NMM,BakuBus MMC,0.65 AZN,63,69
+111,164,Lökbatan qəs. ,Ümid qəs. ,BMHMMC,0.70 AZN,136,50
+112,165,Mehdiabad qəs.,A.M.Şərifzadə küç.,Çinar-Trans MMC,0.60 AZN,65,86
+113,166,C.Naxçıvanski küç.,Ramana qəs.,General - Auto - Company firması,0.55 AZN,78,74
+114,168,Koroğlu NMM,Binə Atçılıq yaşayış massivi ,Ayşən LTD MMC,0.60 AZN,80,44
+115,169,Koroğlu NMM,Badamlıq yaşayış massivi,BUS TRANS MMC,0.60 AZN,89,45
+116,170,Binəqədi qəs. ,Memar Əcəmi m/st ,Xaliq Faiqoğlu MMC,0.50 AZN,45,46
+117,172,Koroğlu NMM,Bilgəh qəs.,BakuBus MMC,0.65 AZN,92,127
+118,174,Sədərək t/m,Lökbatan qəs. ,BMHMMC,0.50 AZN,19,23
+119,176,Sədərək t/m,Binəqədi qəs. ,BMHMMC,0.60 AZN,73,59
+120,177,Pirşağı qəsəbəsi,"Maştağa qəs, (Subtropik Sovxozu)",Çinar-Trans MMC,0.60 AZN,86,30
+121,179,Pirşağı qəs.,Azadlıq pr. m/st ,Çinar-Trans MMC,0.55 AZN,67,55
+122,180,Pirallahı qəs.,Zirə qəs.,6 Dost MMC,0.60 AZN,65,43
+123,182,Mərdəkan qəs.,Binə qəs.,6 Dost MMC,0.50 AZN,57,44
+124,183,Qum adası yaşayış massivi,M.Şərifli küç.,BUS TRANS MMC,0.50 AZN,53,50
+125,184,Ulduz m/st ,Yeni Suraxanı qəs.,General - Auto - Company firması,0.50 AZN,62,60
+126,185,Kürdəxanı qəs.,8 – ci km bazar,Çinar-Trans MMC,0.60 AZN,91,108
+127,186,Albalılıq y/m,8 – ci km bazar ,Ayşən LTD MMC,0.60 AZN,102,125
+128,189,Nardaran qəs.,Koroğlu NMM,BakuBus MMC,0.65 AZN,72,88
+129,190,Binə qəs.,Binə qəs.,Çinar-Trans MMC,0.50 AZN,17,28
+130,191,Q.Qarayev pr.,Bahar qəs.,Kənan-2000 şirkəti,0.60 AZN,58,60
+131,193,Mirzə Məhəmməd xan küç.,Lökbatan NMM,Məmmədova Şahnisə Nəsrəddin qızı,0.60 AZN,61,44
+132,194,Lökbatan qəs.,20 Yanvar m/st,BMHMMC,0.55 AZN,65,55
+133,195,Ələt qəsəbəsi,Abşeron ticarət mərkəzi,BMHMMC,1.10 AZN,218,59
+134,197,293 nömrəli məktəb,Koroğlu NMM,Transkontrol MMC,0.60 AZN,56,38
+135,198,Koroğlu NMM,Zabrat qəs. ,Grand Bus MMC,0.50 AZN,37,38
+136,199,Xırdalan şəh.,Xətai pr.,Xaliq Faiqoğlu MMC,0.55 AZN,74,63
+137,200,Hövsan qəs. ,Binə qəs. ,Vətən.Az-Trans MMC,0.50 AZN,46,0
+138,202,N.Nərimanov m/st,Biləcəri qəs. ,Çinar-Trans MMC,0.50 AZN,47,73
+139,203,Azadlıq pr. m/st ,Biləcəri qəs. (Yeni yaş.sah.),Çinar-Trans MMC,0.50 AZN,16,17
+140,204,Koroğlu NMM,Ramana qəs. ,Kənan-2000 şirkəti,0.50 AZN,35,44
+141,205,Nəsimi m/st,Abşeron ticarət mərkəzi,BakuBus MMC,0.60 AZN,110,110
+142,206,Lökbatan qəs.,Elmlər Akademiyası m/st ,BUS TRANS MMC,0.60 AZN,79,77
+143,208,Suraxanı qəs. ,Bakıxanov qəs. ,Transkontrol MMC,0.50 AZN,30,46
+144,209,Suraxanı qəs. ,"Bakıxanov qəs., (Y.Əliyev küç.)",Transkontrol MMC,0.50 AZN,25,45
+145,210,Türkan bağları,Hövsan qəs.,Vətən.Az-Trans MMC,0.50 AZN,50,48
+146,211,Abşeron ticarət mərkəzi,11 saylı məktəb,BakuBus MMC,0.65 AZN,81,82
+147,212,"Quşçuluq yaş,mas.",Hövsan qəs.,Vətən.Az-Trans MMC,0.50 AZN,25,44
+148,213,Suraxanı qəs.,Q.Qarayev pr.,6 Dost MMC,0.50 AZN,40,32
+149,214,C.Naxçıvanski küç.,Ramana qəs.,Ayşən LTD MMC,0.55 AZN,72,85
+150,215,"Hövsan qəs., Bazar (İlqar Əhlimanov küç.)","Türkan qəs.,119 №-li məktəb (Xanlar küç.)",Vətən.Az-Trans MMC,0.50 AZN,58,67
+151,216,Koroğlu NMM,Balaxanı qəs.  (Səfəvilər küç 2),General-Auto-Company firması,0.50 AZN,42,11
+152,217,Koroğlu NMM,Məmmədli kəndi,BakuBus MMC,0.65 AZN,58,58
+153,446,Zirə qəsəbəsi,Şağan qəsəbəsi,STATUS AVTO MMC,0.60 AZN,100,0
+154,108A,Fatmayı bağları,Azadlıq pr. m/st ,BakuBus MMC,0.65 AZN,72,52
+155,108B,Azadlıq pr. m/st ,Mehdiabad qəsəbəsi,Çinar-Trans MMC,0.50 AZN,42,39
+156,114A,20 Yanvar m/st ,Pirəkəşkül qəs. ,Xaliq Faiqoğlu MMC,0.60 AZN,78,73
+157,114B,20 Yanvar m/st ,Müşfiqabad qəs.,Xaliq Faiqoğlu MMC,0.60 AZN,69,66
+158,118A,Koroğlu NMM,Zabrat qəs.,Kənan-2000 şirkəti,0.50 AZN,38,37
+159,118B,Koroğlu NMM,Zabrat qəs.,Grand Bus MMC,0.50 AZN,37,28
+160,120A,Sədərək t/m,Bayıl qəs. ,BMHMMC,0.50 AZN,39,58
+161,120E,Hövsan qəs. ,28 May m/st ,BakuBus MMC,0.90 AZN,98,20
+162,121E,Hövsan qəs. ,Əhmədli m/st ,BakuBus MMC,0.80 AZN,72,16
+163,140A,Xırdalan d/st,Lökbatan qəs.,BMHMMC,0.60 AZN,72,37
+164,140E,Koroğlu NMM,Mərdəkan qəs.,BakuBus MMC,0.90 AZN,86,14
+165,141E,Xaşaxuna bağları,Koroğlu NMM,BakuBus MMC,0.60 AZN,115,64
+166,150A,Qala qəs.,Pirallahı qəs.,6 Dost MMC,0.60 AZN,82,0
+167,160A,Binə Atçılıq yaşayış massivi,Binə qəs.(mərkəz),Çinar-Trans MMC,0.50 AZN,54,23
+168,173A,Koroğlu NMM,Pirşağı qəs.,Çinar-Trans MMC,0.55 AZN,80,77
+169,173B,Pirşağı bağları,Koroğlu NMM,Çinar-Trans MMC,0.55 AZN,76,74
+170,7A,Bakı Beynəlxalq Avtovağzal Kompleksi,Gəncə pr.,BakuBus MMC,0.60 AZN,77,92
+171,7B,Koroğlu NMM,Yasamal yaşayış kompleksi (MİDA),BakuBus MMC,0.60 AZN,63,66
+172,88A,Bakı Ağ Şəhər,Azadlıq prospekti m/st,BakuBus MMC,0.60 AZN,43,57
+173,E1,Xalqlar Dostluğu m/st,Abşeron ticarət mərkəzi,BakuBus MMC,0.80 AZN,114,31
+174,H1,Heydər Əliyev adına Beynəlxalq Hava Limanı,28 May m/st ,BakuBus MMC,1.30 AZN,87,12
+175,M8,Gənclik m/st ,Maştağa qəs. ,BakuBus MMC,0.65 AZN,98,115
+176,508,Saray qəs.,20 Yanvar m/st,BakuBus MMC,0.65 AZN,79,45
+177,567,Avtovağzal NMM,Qobu qəsəbəsi,ENA Transport MMC,0.60 AZN,60,88
+178,592,Xırdalan şəhəri ,Görədil kəndi,Xaliq Faiqoğlu MMC,0.60 AZN,79,107
+179,594,20 Yanvar m/st,Sumqayıt şəhəri,BakuBus MMC,0.80 AZN,94,10
+180,595,Avtovağzal NMM,Sumqayıt avtovağzalı,BakuBus MMC,0.80 AZN,88,12
+182,502,Bakı Beynəlxalq Avtovağzal Kompleksi,32 saylı tam orta məktəb,SN Cavid MMC,0.70 AZN,115,57
+183,503,Bakı Beynəlxalq Avtovağzal Kompleksi,Babək küçəsi 7,BakuBus MMC,0.80 AZN,81,79
+184,505,Abşeron ticarət mərkəzi,Ceyranbatan qəsəbəsi,SAHİL MMC,0.70 AZN,117,76
+185,506,Sədərək Ticarət Mərkəzi,Masazır qəsəbəsi duz gölü,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.60 AZN,82,97
+186,509,Lökbatan Qəsəbə Mədəniyyət Sarayı,Sumqayıt avtovağzalı,AMAL-D MƏHDUD MƏSULİYYƏTLİ CƏMİYYƏTİ,1.00 AZN,159,120
+187,511,Bakı Beynəlxalq Avtovağzal Kompleksi,Aşağı Güzdək qəsəbəsi,GÜZDƏK NƏQLİYYAT MMC,0.60 AZN,64,50
+188,515,Bakı Beynəlxalq Avtovağzal Kompleksi,Niyazi Əsgərov küçəsi 44,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.50 AZN,44,49
+190,519,Sədi Şirazi küçəsi,Heydər Əliyev küçəsi 4,SƏMƏD BAYRAMOV ATAKİŞİ OĞLU,0.50 AZN,6,6
+191,521,Zəngilan şəhərciyi yaşayış kompleksi,66 nömrəli uşaq bağçası,XƏQANİ ÇIRAQOV MƏMMƏD OĞLU,0.60 AZN,82,52
+192,522,Saray Qəsəbəsi Məhəmməd Füzuli küçəsi 1,Mərkəzi univermaq,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.50 AZN,42,68
+193,523,Heydər Əliyev prospekti 101A,Mərkəzi univermaq,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.60 AZN,89,97
+194,525,Memar Əcəmi m/st,Zəngilan şəhərciyi yaşayış kompleksi,M.S.A.Company MMC,0.60 AZN,56,81
+195,531,Ceyranbatan qəs. H.B.Zərdabi küçəsi 1,Sumqayıt avtovağzalı,SAHİL MMC,0.50 AZN,33,28
+196,533,Bakı Beynəlxalq Avtovağzal Kompleksi,Aşağə güzdək qəsəbə 2 nömrəli tam orta məktəb,SAHİL MMC,0.60 AZN,98,61
+197,535,Həsən Əliyev prospekti 91,Novxanı çimərliyi,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.60 AZN,79,55
+198,536,25 saylı uşaq bağçası,Mehdiabad qəsəbəsi yaşayış kompleksi,ABAS-AĞA BƏDİROV BAHADIR OĞLU,0.60 AZN,88,73
+200,539,-,-,SAHİL MMC,1.00 AZN,166,0
+201,550,"Sahil qəsəbəsi, Məhərrəm Seyidov küçəsi, 50",67 saylı uşaq bağçası,RAMİL İSMAYILOV İLHAM OĞLU,0.70 AZN,120,37
+202,551,Bakı Beynəlxalq Avtovağzal Kompleksi,Atyalı qəsəbəsi,KƏNAN NƏCƏFOV SABİR OĞLU,0.50 AZN,38,35
+203,553,Güzdək qəsəbə tam orta məktəb,Bakı Beynəlxalq Avtovağzal Kompleksi,NİCAT FƏRHADOV ZEYNAL OĞLU,0.60 AZN,61,46
+204,554,Güzdək bələdiyyəsi,Səxavət Məhərrəmov adına 106 saylı tam orta məktəb,NİCAT FƏRHADOV ZEYNAL OĞLU,0.60 AZN,63,22
+205,555,Müşfiqabad qәsəbəsi 33 nömrəli tam orta məktəb,Sumqayıt avtovağzalı,RAMİL İSMAYILOV İLHAM OĞLU,0.60 AZN,67,37
+206,556,-,-,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.60 AZN,97,0
+207,557,Abşeron ticarət mərkəzi,33 nömrəli tam orta məktəb,SAHİL MMC,0.70 AZN,108,107
+208,569,Bakı Beynəlxalq Avtovağzal Kompleksi,Şəfiqə Axundova küçəsi,XAN NƏQLİYYAT MMC,0.50 AZN,40,28
+209,596,Lökbatan Nəqliyyat Mübadilə Mərkəzi,Niyazi Əsgərov küçəsi 14,F.RÖVŞƏN İSTEHSALAT  MÜƏSSİSƏSİ,0.60 AZN,95,111

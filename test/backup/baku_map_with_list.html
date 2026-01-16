@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Baku Locations - Interactive Map</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #container { display: flex; height: 100vh; }
+        #sidebar { 
+            width: 350px; 
+            background: #f5f5f5; 
+            overflow-y: auto; 
+            border-right: 2px solid #ddd;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        #map { flex: 1; }
+        .sidebar-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .sidebar-header h2 {
+            margin: 0 0 5px 0;
+            font-size: 20px;
+        }
+        .sidebar-header p {
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .search-box {
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 85px;
+            z-index: 99;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .location-list {
+            padding: 10px;
+        }
+        .location-item {
+            background: white;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid #3498db;
+        }
+        .location-item:hover {
+            background: #e3f2fd;
+            transform: translateX(5px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .location-item.active {
+            background: #2196f3;
+            color: white;
+            border-left-color: #1976d2;
+        }
+        .location-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        .location-coords {
+            font-size: 11px;
+            color: #666;
+        }
+        .location-item.active .location-coords {
+            color: rgba(255,255,255,0.8);
+        }
+        .no-results {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="sidebar">
+            <div class="sidebar-header">
+                <h2>📍 Baku Locations</h2>
+                <p>52 locations found</p>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search locations..." />
+            </div>
+            <div class="location-list" id="locationList"></div>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([40.4093, 49.8671], 11);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        var locations = [{"title": "AAAF Park Yaşayış Kompleksi", "lat": -85.0511287798066, "lon": 470288.671875, "id": 0}, {"title": "Baku Engineering University", "lat": -85.0511287798066, "lon": 470299.921875, "id": 1}, {"title": "Bank Respublika Arena", "lat": -85.0511287798066, "lon": 470380.78125, "id": 2}, {"title": "Mud Volcano", "lat": -85.0511287798066, "lon": 470431.40625, "id": 3}, {"title": "Binagadi Settlement", "lat": -85.0511287798066, "lon": 470508.75, "id": 4}, {"title": "Nurlu Yaşayış Massivi", "lat": -85.0511287798066, "lon": 470430.703125, "id": 5}, {"title": "Sabunçu Xəstəxanası", "lat": -85.0511287798066, "lon": 470741.484375, "id": 6}, {"title": "Balakhani", "lat": -85.0511287798066, "lon": 470701.40625, "id": 7}, {"title": "Hökməli", "lat": -85.0511287798066, "lon": 470308.359375, "id": 8}, {"title": "Heydər Məscidi", "lat": -85.0511287798066, "lon": 470499.609375, "id": 9}, {"title": "Milli Onkologiya Mərkəzi", "lat": -85.0511287798066, "lon": 470458.828125, "id": 10}, {"title": "Biləcəri", "lat": -85.0511287798066, "lon": 470460.234375, "id": 11}, {"title": "Sulutəpə", "lat": -85.0511287798066, "lon": 470394.140625, "id": 12}, {"title": "9-cu Mikrorayon", "lat": -85.0511287798066, "lon": 470479.21875, "id": 13}, {"title": "Xocəsən", "lat": -85.0511287798066, "lon": 470378.671875, "id": 14}, {"title": "Bakı bulvarı", "lat": -85.0511287798066, "lon": 470538.984375, "id": 15}, {"title": "Dağüstü park", "lat": -85.0511287798066, "lon": 470508.75, "id": 16}, {"title": "Crescent Mall", "lat": -85.0511287798066, "lon": 470573.4375, "id": 17}, {"title": "\"SURAXANI\" GƏMİ-MUZEYİ", "lat": -85.0511287798066, "lon": 470536.171875, "id": 18}, {"title": "Badamdar", "lat": -85.0511287798066, "lon": 470458.125, "id": 19}, {"title": "Şıx", "lat": -85.0511287798066, "lon": 470453.90625, "id": 20}, {"title": "Congress Hall Of Baku Higher Oil School", "lat": -85.0511287798066, "lon": 470506.640625, "id": 21}, {"title": "Şubanı", "lat": -85.0511287798066, "lon": 470380.78125, "id": 22}, {"title": "Heydər Əliyev Mərkəzi", "lat": -85.0511287798066, "lon": 470588.90625, "id": 23}, {"title": "Yeni klinika", "lat": -85.0511287798066, "lon": 470652.890625, "id": 24}, {"title": "Nizami Tibb Mərkəzi", "lat": -85.0511287798066, "lon": 470692.96875, "id": 25}, {"title": "Baku Olimpiya Stadionu", "lat": -85.0511287798066, "lon": 470695.078125, "id": 26}, {"title": "Bakı Ağ Şəhər", "lat": -85.0511287798066, "lon": 470631.09375, "id": 27}, {"title": "Həzi Aslanov", "lat": -85.0511287798066, "lon": 470704.921875, "id": 28}, {"title": "Dərnəgül", "lat": -85.0511287798066, "lon": 470553.046875, "id": 29}, {"title": "NZS", "lat": -85.0511287798066, "lon": 470683.828125, "id": 30}, {"title": "Gənclik Park", "lat": -85.0511287798066, "lon": 470753.4375, "id": 31}, {"title": "Appro Hospital", "lat": -85.0511287798066, "lon": 470882.8125, "id": 32}, {"title": "Ramana qalası", "lat": -85.0511287798066, "lon": 470818.828125, "id": 33}, {"title": "Zabrat Hava Limanı", "lat": -85.0511287798066, "lon": 470799.140625, "id": 34}, {"title": "Ramana Yaşayış kompleksi Grandmart supermarket", "lat": -85.0511287798066, "lon": 470849.765625, "id": 35}, {"title": "Heydər Əliyev Adına Beynəlxalq Hava Limanı", "lat": -85.0511287798066, "lon": 470966.484375, "id": 36}, {"title": "Agilli Bala- montoseri merkezi", "lat": -85.0511287798066, "lon": 471012.1875, "id": 37}, {"title": "Binə", "lat": -85.0511287798066, "lon": 471066.328125, "id": 38}, {"title": "Baku Medical Plaza", "lat": -85.0511287798066, "lon": 470787.1875, "id": 39}, {"title": "Mәlhәm Beynəlxalq Hospital", "lat": -85.0511287798066, "lon": 470766.796875, "id": 40}, {"title": "Bakıxanov", "lat": -85.0511287798066, "lon": 470757.65625, "id": 41}, {"title": "Əhmədli", "lat": -85.0511287798066, "lon": 470759.0625, "id": 42}, {"title": "Yeni Günəşli", "lat": -85.0511287798066, "lon": 470820.9375, "id": 43}, {"title": "Əmircan", "lat": -85.0511287798066, "lon": 470833.59375, "id": 44}, {"title": "Şərq Massivi", "lat": -85.0511287798066, "lon": 470837.8125, "id": 45}, {"title": "6th Madan", "lat": -85.0511287798066, "lon": 470885.625, "id": 46}, {"title": "Zığ", "lat": -85.0511287798066, "lon": 470814.609375, "id": 47}, {"title": "Dreamland Golf Club", "lat": -85.0511287798066, "lon": 471053.671875, "id": 48}, {"title": "Yeni Suraxanı", "lat": -85.0511287798066, "lon": 470930.625, "id": 49}, {"title": "Aviamodellərin uçuş meydançası", "lat": -85.0511287798066, "lon": 471138.046875, "id": 50}, {"title": "Hövsan Mall", "lat": -85.0511287798066, "lon": 471015.0, "id": 51}];
+        var markers = {};
+        var activeMarker = null;
+        
+        // Create markers
+        locations.forEach(function(loc) {
+            var marker = L.marker([loc.lat, loc.lon]).addTo(map);
+            marker.bindPopup('<div style="font-weight:bold; font-size:14px;">' + loc.title + '</div>');
+            markers[loc.id] = marker;
+            
+            marker.on('click', function() {
+                highlightLocation(loc.id);
+            });
+        });
+        
+        // Render location list
+        function renderList(filteredLocations) {
+            var listHtml = '';
+            if (filteredLocations.length === 0) {
+                listHtml = '<div class="no-results">No locations found</div>';
+            } else {
+                filteredLocations.forEach(function(loc) {
+                    listHtml += '<div class="location-item" data-id="' + loc.id + '" onclick="flyToLocation(' + loc.id + ')">' +
+                        '<div class="location-title">' + loc.title + '</div>' +
+                        '<div class="location-coords">' + loc.lat.toFixed(5) + ', ' + loc.lon.toFixed(5) + '</div>' +
+                        '</div>';
+                });
+            }
+            document.getElementById('locationList').innerHTML = listHtml;
+        }
+        
+        // Initial render
+        renderList(locations);
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            var searchTerm = e.target.value.toLowerCase();
+            var filtered = locations.filter(function(loc) {
+                return loc.title.toLowerCase().includes(searchTerm);
+            });
+            renderList(filtered);
+        });
+        
+        // Fly to location and highlight
+        function flyToLocation(id) {
+            var loc = locations.find(l => l.id === id);
+            if (loc) {
+                map.flyTo([loc.lat, loc.lon], 15, {
+                    duration: 1.5
+                });
+                markers[id].openPopup();
+                highlightLocation(id);
+            }
+        }
+        
+        // Highlight active location
+        function highlightLocation(id) {
+            // Remove previous highlight
+            document.querySelectorAll('.location-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+            
+            // Add new highlight
+            var item = document.querySelector('[data-id="' + id + '"]');
+            if (item) {
+                item.classList.add('active');
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+    </script>
+</body>
+</html>
