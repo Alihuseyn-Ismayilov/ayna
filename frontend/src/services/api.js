@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://ayna-backend-n4vl.onrender.com';
+const API_BASE_URL = 'https://ayna-dashboard.fly.dev';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
