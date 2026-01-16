@@ -1,8 +1,72 @@
-fastapi
-uvicorn[standard]
-pandas
-geopandas
-pydantic
-selenium
-python-multipart
-
+annotated-doc==0.0.4
+annotated-types==0.7.0
+anyio==4.12.1
+asttokens @ file:///C:/Users/dev-admin/buildout/croot/asttokens_1759955575391/work
+attrs==25.4.0
+certifi==2026.1.4
+cffi==2.0.0
+charset-normalizer==3.4.4
+click==8.3.1
+colorama @ file:///C:/Users/dev-admin/buildout/croot/colorama_1759952627215/work
+comm @ file:///C:/Users/dev-admin/buildout/croot/comm_1763637613849/work
+debugpy @ file:///C:/miniconda3/conda-bld/debugpy_1762421656989/work
+decorator @ file:///C:/Users/dev-admin/buildout/croot/decorator_1759956412694/work
+executing @ file:///C:/Users/dev-admin/buildout/croot/executing_1761985455628/work
+fastapi==0.128.0
+geopandas==1.1.2
+h11==0.16.0
+httptools==0.7.1
+idna==3.11
+ipykernel @ file:///C:/miniconda3/conda-bld/ipykernel_1762946091833/work
+ipython @ file:///C:/miniconda3/conda-bld/ipython_1762789318352/work
+ipython_pygments_lexers @ file:///C:/Users/dev-admin/buildout/croot/ipython_pygments_lexers_1759956485878/work
+jedi @ file:///C:/Users/dev-admin/buildout/croot/jedi_1759956512541/work
+jupyter_client @ file:///C:/Users/task_176839910273266/croot/jupyter_client_1768399224994/work
+jupyter_core @ file:///C:/Users/dev-admin/buildout/croot/jupyter_core_1765281302918/work
+matplotlib-inline @ file:///C:/miniconda3/conda-bld/matplotlib-inline_1762779269415/work
+nest-asyncio @ file:///tmp/build/80754af9/nest-asyncio_1613680548246/work
+numpy==2.4.1
+outcome==1.3.0.post0
+packaging @ file:///C:/miniconda3/conda-bld/packaging_1761049098810/work
+pandas==2.3.3
+parso @ file:///C:/miniconda3/conda-bld/parso_1762781931209/work
+platformdirs @ file:///C:/miniconda3/conda-bld/platformdirs_1762356618739/work
+prompt_toolkit @ file:///C:/miniconda3/conda-bld/prompt-toolkit_1761745044554/work
+psutil @ file:///C:/miniconda3/conda-bld/psutil_1761896536168/work
+pure_eval @ file:///C:/Users/dev-admin/buildout/croot/pure_eval_1759956052992/work
+pycparser==2.23
+pydantic==2.12.5
+pydantic_core==2.41.5
+Pygments @ file:///C:/Users/dev-admin/buildout/croot/pygments_1762546955213/work
+pyogrio==0.12.1
+pyproj==3.7.2
+PySocks==1.7.1
+python-dateutil @ file:///C:/Users/dev-admin/buildout/croot/python-dateutil_1759954839763/work
+python-dotenv==1.2.1
+python-multipart==0.0.21
+pytz==2025.2
+pywin32 @ file:///C:/Users/dev-admin/buildout/croot/pywin32_1759953972432/work
+PyYAML==6.0.3
+pyzmq @ file:///C:/miniconda3/conda-bld/pyzmq_1762375620799/work
+requests==2.32.5
+selenium==4.39.0
+shapely==2.1.2
+six @ file:///C:/Users/dev-admin/buildout/croot/six_1759954493303/work
+sniffio==1.3.1
+sortedcontainers==2.4.0
+stack_data @ file:///C:/Users/dev-admin/buildout/croot/stack_data_1759957300617/work
+starlette==0.50.0
+tornado @ file:///C:/Users/dev-admin/buildout/croot/tornado_1759954992390/work
+traitlets @ file:///C:/Users/dev-admin/buildout/croot/traitlets_1759954525269/work
+trio==0.32.0
+trio-websocket==0.12.2
+typing-inspection==0.4.2
+typing_extensions==4.15.0
+tzdata==2025.3
+urllib3==2.6.3
+uvicorn==0.40.0
+watchfiles==1.1.1
+wcwidth @ file:///C:/Users/task_176777903181948/croot/wcwidth_1767779236270/work
+websocket-client==1.9.0
+websockets==16.0
+wsproto==1.3.2
