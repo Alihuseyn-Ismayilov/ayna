@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://ayna-dashboard.fly.dev';
+const API_BASE_URL = 'https://jung-dowerless-unreverently.ngrok-free.dev';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
