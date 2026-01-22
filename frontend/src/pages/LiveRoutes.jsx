@@ -3,7 +3,19 @@ import { MapContainer, TileLayer, CircleMarker, Polyline, Marker, Tooltip } from
 import { motion } from 'framer-motion';
 import { Search, RefreshCw, Star } from 'lucide-react';
 import L from 'leaflet';
+import axios from 'axios';
 import './LiveRoutes.css';
+
+// Configure axios instance with ngrok headers
+const API_BASE_URL = 'https://jung-dowerless-unreverently.ngrok-free.dev';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true',
+  },
+});
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -38,9 +50,8 @@ const LiveRoutes = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://jung-dowerless-unreverently.ngrok-free.dev/api/routes/live');
-      const result = await response.json();
-      setData(result);
+      const response = await api.get('/api/routes/live');
+      setData(response.data);
     } catch (error) {
       console.error('Error loading routes:', error);
       alert('No data found. Please click "Refresh Live Data" to fetch from API.');
@@ -52,7 +63,7 @@ const LiveRoutes = () => {
   const refreshData = async () => {
     try {
       setRefreshing(true);
-      await fetch('https://jung-dowerless-unreverently.ngrok-free.dev/api/routes/refresh', { method: 'POST' });
+      await api.post('/api/routes/refresh');
       await loadData();
       alert('Data refreshed successfully!');
     } catch (error) {
