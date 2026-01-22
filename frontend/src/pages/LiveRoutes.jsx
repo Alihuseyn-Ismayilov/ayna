@@ -38,7 +38,7 @@ const LiveRoutes = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/routes/live');
+      const response = await fetch('https://jung-dowerless-unreverently.ngrok-free.dev/api/routes/live');
       const result = await response.json();
       setData(result);
     } catch (error) {
@@ -52,7 +52,7 @@ const LiveRoutes = () => {
   const refreshData = async () => {
     try {
       setRefreshing(true);
-      await fetch('http://localhost:8000/api/routes/refresh', { method: 'POST' });
+      await fetch('https://jung-dowerless-unreverently.ngrok-free.dev/api/routes/refresh', { method: 'POST' });
       await loadData();
       alert('Data refreshed successfully!');
     } catch (error) {
