@@ -46,7 +46,7 @@ const BusAnalytics = () => {
       if (filters.company) params.append('companies', filters.company);
       if (filters.route) params.append('routes', filters.route);
       
-      const response = await fetch(`http://localhost:8000/api/bus/analytics?${params}`);
+      const response = await fetch(`https://jung-dowerless-unreverently.ngrok-free.dev/api/bus/analytics?${params}`);
       const data = await response.json();
       setAnalytics(data);
     } catch (error) {
@@ -64,7 +64,7 @@ const BusAnalytics = () => {
       if (filters.dateStart) params.append('start_date', filters.dateStart);
       if (filters.dateEnd) params.append('end_date', filters.dateEnd);
       
-      const response = await fetch(`http://localhost:8000/api/bus/registrations?limit=10000&${params}`);
+      const response = await fetch(`https://jung-dowerless-unreverently.ngrok-free.dev/api/bus/registrations?limit=10000&${params}`);
       const data = await response.json();
       setTableData(data.data || []);
     } catch (error) {
